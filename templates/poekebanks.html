@@ -7,19 +7,19 @@
 
 <body>
 <div class = 'pane'>
-<h1>Restaurants</h1>
+<h1>PoekeBanks</h1>
 
-<a href="{{url_for('newRestaurant')}}" > <h3> Create a New Restaurant </h3> </a>
+<a href="{{url_for('newPoekeBank')}}" > <h3> Create a New Poekebank </h3> </a>
 
-{% for restaurant in restaurants %}
+{% for poekebank in poekebanks %}
 
 
 
-<a href = "{{url_for('showMenu', restaurant_id = restaurant.id)}}"> <p>{{restaurant.name}}</p></a>
+<a href = "{{url_for('showPoekemons', poekebank_id = poekebank.id)}}"> <p>Poekebank Box#: {{poekebank.box}}</p></a>
 
-<p><a href = "{{url_for('editRestaurant',restaurant_id = restaurant.id)}}">Edit Restaurant</a></p>
+<p><a href = "{{url_for('editPoekeBank', poekebank_id = poekebank.id)}}">Edit PoekeBank</a></p>
 
-<p> <a href = "{{url_for('deleteRestaurant',restaurant_id = restaurant.id)}}">Delete Restaurant</a> </p>
+<p> <a href = "{{url_for('deletePoekeBank', poekebank_id = poekebank.id)}}">Delete PoekeBank</a> </p>
 
 
 

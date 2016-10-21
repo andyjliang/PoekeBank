@@ -4,7 +4,7 @@
 	</head>
 
 <body>
-<h1> Are you sure you want to delete {{item.name}}? </h1>
+<h1> Are you sure you want to delete Poekemon Index {{poekemon.poeke_index}}? </h1>
 
 <form action="#" method = 'post'>
 
@@ -15,7 +15,7 @@
 
 </form>
 
-<a href = '#'> Cancel </a>
+<a href = '{{url_for('showPoekemons', poekebank_id = poekebank_id)}}'> Cancel </a>
 </body>
 
 </html>

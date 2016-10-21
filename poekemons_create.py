@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Poekemon, PoekeBank
 
-engine = create_engine('sqlite:///poekemon.db')
+engine = create_engine('sqlite:///poekebank.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()

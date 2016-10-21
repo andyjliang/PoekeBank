@@ -13,6 +13,7 @@ session = DBSession()
 @app.route('/poekebanks/')
 def showPoekebanks():
 	poekebanks = session.query(PoekeBank).all()
+	print poekebanks
 	return render_template('poekebanks.html', poekebanks=poekebanks)
 
 @app.route('/poekebanks/JSON')
@@ -28,7 +29,7 @@ def newPoekeBank():
 		session.commit()
 		return redirect(url_for('showPoekebanks'))
 	else:
-		return render_template('newPoekebank.html', poekebank=newPoekebank)
+		return render_template('newPoekebanks.html')
 
 @app.route('/poekebanks/<int:poekebank_id>/edit/', methods=['GET', 'POST'])
 def editPoekeBank(poekebank_id):
@@ -52,25 +53,25 @@ def deletePoekeBank(poekebank_id):
 
 @app.route('/poekebanks/<int:poekebank_id>/')
 @app.route('/poekebanks/<int:poekebank_id>/poekemon')
-def showPoekemon(poekebank_id):
+def showPoekemons(poekebank_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
-	poekemons = session.query(Poekemon).filter_by(poekebank_id=poekebank_id).all()
+	poekemons = session.query(Poekemon).filter_by(storage_id=poekebank_id).all()
 	return render_template('poekemons.html', poekebank=poekebank, poekemons=poekemons)
 
 @app.route('/poekebanks/<int:poekebank_id>/poekemon/JSON')
 def poekeBankPoekemonJSON(poekebank_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
-	poekemons = session.query(Poekemon).filter_by(poekebank_id=poekebank_id).all()
+	poekemons = session.query(Poekemon).filter_by(storage_id=poekebank_id).all()
 	return jsonify(poekemons=[p.serialize for p in poekemons])
 
 @app.route('/poekebanks/<int:poekebank_id>/poekemon/new/', methods=['GET', 'POST'])
-def newPoekemon(poekemon_id):
+def newPoekemon(poekebank_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
 	if request.method == 'POST':
-		newPoekemon = Poekemon(poeke_index=request.form['index'], storage=poekebank)
+		newPoekemon = Poekemon(poeke_index=request.form['poeke_index'], storage=poekebank)
 		session.add(newPoekemon)
 		session.commit()
-		return redirect(url_for('showPoekemon', poekebank_id=poekebank_id))
+		return redirect(url_for('showPoekemons', poekebank_id=poekebank_id))
 	else:
 		return render_template('newPoekemon.html', poekebank_id=poekebank_id)
 
@@ -81,32 +82,30 @@ def editPoekemon(poekebank_id, poekemon_id):
 	if request.method == 'POST':
 		if request.form['poeke_index']:
 			editedPoekemon.poeke_index = request.form['poeke_index']
-		if request.form['storage']:
-			editedPoekemon.storage = request.form['storage']
 		session.add(editedPoekemon)
 		session.commit()
-		return redirect(url_for('showPoekemon'), poekebank_id=poekebank_id)
+		return redirect(url_for('showPoekemons', poekebank_id=poekebank_id))
 	else:
 		return render_template('editPoekemon.html', poekebank_id=poekebank_id, poekemon_id=poekemon_id, poekemon=editedPoekemon)
 
 @app.route('/poekebanks/<int:poekebank_id>/poekemon/<int:poekemon_id>/delete/', methods=['GET', 'POST'])
 def deletePoekemon(poekebank_id, poekemon_id):
+	poekemonToDelete = session.query(Poekemon).filter_by(id=poekemon_id).one()
 	if request.method == "POST":
-		poekemonToDelete = session.query(Poekemon).filter_by(id=poekemon_id).one()
 		session.delete(poekemonToDelete)
 		session.commit()
-		return redirect(url_for('showPoekemon'), poekebank_id=poekebank_id)
+		return redirect(url_for('showPoekemons', poekebank_id=poekebank_id))
 	else:
-		return render_template('deletePoekemon.html', poekemon=poekemonToDelete)
+		return render_template('deletePoekemon.html', poekebank_id=poekebank_id, poekemon=poekemonToDelete)
 
 
 @app.route('/poekebanks/<int:poekebank_id>/poekemon/<int:poekemon_id>/JSON')
 def poekemonJSON(poekebank_id, poekemon_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
-	poekemons = session.query(Poekemon).filter_by(poekebank_id=poekebank_id).all()
+	poekemons = session.query(Poekemon).filter_by(storage_id=poekebank_id).all()
 	return jsonify(Poekemons=[p.serialize for p in poekemons])
 
 
 if __name__ == '__main__':
 	app.debug = True
-	app.run(host='0.0.0.0', port-5000)
+	app.run(host='0.0.0.0', port=5000)
