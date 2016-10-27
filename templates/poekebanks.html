@@ -15,16 +15,40 @@
 
 
 
-<a href = "{{url_for('showPoekemons', poekebank_id = poekebank.id)}}"> <p>Poekebank Box#: {{poekebank.box}}</p></a>
+<a href = "{{url_for('showPoekemons', poekebank_id = poekebank.id)}}"> <p>Poekebank Box#: {{poekebank.id}}</p></a>
 
 <p><a href = "{{url_for('editPoekeBank', poekebank_id = poekebank.id)}}">Edit PoekeBank</a></p>
 
 <p> <a href = "{{url_for('deletePoekeBank', poekebank_id = poekebank.id)}}">Delete PoekeBank</a> </p>
 
-
-
-
 {% endfor %}
+
+<br></br>
+<h2>Poekebank Log</h2>
+<br></br>
+<div style="border:solid black 1px;"> 
+	{% for poekebank in poekebanks %}
+	<p>{{poekebank.__dict__}}</p>
+	{% endfor %}
+</div>
+
+<br></br>
+<h2>Poekemons Log</h2>
+<br></br>
+<div style="border:solid black 1px;"> 
+	{% for poekemon in poekemons %}
+	<p>{{poekemon.__dict__}}</p>
+	{% endfor %}
+</div>
+
+<br></br>
+<h2>Poekedex Log</h2>
+<br></br>
+<div style="border:solid black 1px;"> 
+	{% for dex in poekedex %}
+	<p>{{dex.__dict__}}</p>
+	{% endfor %}
+</div>
 
 </div>
 </body>

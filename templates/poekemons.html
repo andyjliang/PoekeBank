@@ -27,11 +27,14 @@
 
 		{% for i in poekemons %}
 
-		<p>Poekemon Index: {{i.poeke_index}}</p>
+		<p>Poekemon Name: {{i[1].__dict__.name}}</p>
+		<p>Poekemon Index: {{i[1].__dict__.id}}</p>
+		<p>Poekemon Type: {{i[1].__dict__.poketype}}</p>
+		<p>Poekemon Evolution Level: {{i[1].__dict__.evolution_level}}</p>
 	
-		<a href='{{url_for('editPoekemon', poekebank_id = poekebank.id, poekemon_id=i.id ) }}' >Edit</a>
+		<a href='{{url_for('editPoekemon', poekebank_id = poekebank.id, poekemon_id=i[0].__dict__.id ) }}' >Edit</a>
 	</br>
-	<a href='{{url_for('deletePoekemon', poekebank_id = poekebank.id, poekemon_id=i.id ) }}' >Delete</a>
+	<a href='{{url_for('deletePoekemon', poekebank_id = poekebank.id, poekemon_id=i[0].__dict__.id ) }}' >Delete</a>
 </br>
 </br>
 

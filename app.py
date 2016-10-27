@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Poekemon, PoekeBank
+from database_setup import Base, Poekemon, PoekeBank, Poekedex
 
 app = Flask(__name__)
 engine = create_engine('sqlite:///poekebank.db')
@@ -12,9 +12,10 @@ session = DBSession()
 @app.route('/')
 @app.route('/poekebanks/')
 def showPoekebanks():
+	poekedex = session.query(Poekedex).all()
 	poekebanks = session.query(PoekeBank).all()
-	print poekebanks
-	return render_template('poekebanks.html', poekebanks=poekebanks)
+	poekemons = session.query(Poekemon).all()
+	return render_template('poekebanks.html', poekebanks=poekebanks, poekemons=poekemons, poekedex=poekedex)
 
 @app.route('/poekebanks/JSON')
 def poekebanksJSON():
@@ -55,7 +56,7 @@ def deletePoekeBank(poekebank_id):
 @app.route('/poekebanks/<int:poekebank_id>/poekemon')
 def showPoekemons(poekebank_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
-	poekemons = session.query(Poekemon).filter_by(storage_id=poekebank_id).all()
+	poekemons = session.query(Poekemon, Poekedex).filter(Poekemon.poeke_index==Poekedex.id).filter_by(storage_id=poekebank_id).all()
 	return render_template('poekemons.html', poekebank=poekebank, poekemons=poekemons)
 
 @app.route('/poekebanks/<int:poekebank_id>/poekemon/JSON')
@@ -68,9 +69,12 @@ def poekeBankPoekemonJSON(poekebank_id):
 def newPoekemon(poekebank_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
 	if request.method == 'POST':
-		newPoekemon = Poekemon(poeke_index=request.form['poeke_index'], storage=poekebank)
-		session.add(newPoekemon)
-		session.commit()
+		if session.query(func.count(poekebank.id)) <= 5:
+			newPoekemon = Poekemon(poeke_index=request.form['poeke_index'], storage=poekebank)
+			session.add(newPoekemon)
+			session.commit()
+		else:
+			print "box storage amount exceeded"
 		return redirect(url_for('showPoekemons', poekebank_id=poekebank_id))
 	else:
 		return render_template('newPoekemon.html', poekebank_id=poekebank_id)
