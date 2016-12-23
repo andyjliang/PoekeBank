@@ -39,7 +39,6 @@ a {
     background-color: #333333;
 }
 .pane {
-    position: absolute;
     left: 10%;
     border: 2px solid;
     border-radius: 25px;
@@ -47,6 +46,8 @@ a {
     margin: 5px;
     border-color: #999999;
     background-color: #333333;
+    float: left;
+    position: relative;
 }
 .header {
     left: 50%;

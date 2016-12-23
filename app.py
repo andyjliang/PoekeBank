@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Poekemon, PoekeBank, Poekedex
+from database_setup import Base, Poekemon, PoekeBank, Trainer
 
 app = Flask(__name__)
 engine = create_engine('sqlite:///poekebank.db')
@@ -12,10 +12,17 @@ session = DBSession()
 @app.route('/')
 @app.route('/poekebanks/')
 def showPoekebanks():
-	poekedex = session.query(Poekedex).all()
-	poekebanks = session.query(PoekeBank).all()
-	poekemons = session.query(Poekemon).all()
-	return render_template('poekebanks.html', poekebanks=poekebanks, poekemons=poekemons, poekedex=poekedex)
+	# REPLACE since TODO is to use OAuth
+	user = session.query(Trainer).first()
+	selected_user_id = user.trainer_id
+
+	users_poekemons_query = 'select poekemons.poekedex_index from poekebank inner join poekemons on \
+		poekemons.poekemon_id = poekebank.poekemon_id where poekebank.trainer_id = %s;' %selected_user_id
+	other_users_query = 'select * from trainers where trainer_id != %s;' %selected_user_id
+
+	poekemons = session.execute(users_poekemons_query)
+	other_users = session.execute(other_users_query)
+	return render_template('poekebanks.html', user=user, poekemons=poekemons, other_users=other_users)
 
 @app.route('/poekebanks/JSON')
 def poekebanksJSON():
@@ -56,7 +63,7 @@ def deletePoekeBank(poekebank_id):
 @app.route('/poekebanks/<int:poekebank_id>/poekemon')
 def showPoekemons(poekebank_id):
 	poekebank = session.query(PoekeBank).filter_by(id=poekebank_id).one()
-	poekemons = session.query(Poekemon, Poekedex).filter(Poekemon.poeke_index==Poekedex.id).filter_by(storage_id=poekebank_id).all()
+	poekemons = session.query(Poekemon, Trainer).filter(Poekemon.poeke_index==Trainer.id).filter_by(storage_id=poekebank_id).all()
 	return render_template('poekemons.html', poekebank=poekebank, poekemons=poekemons)
 
 @app.route('/poekebanks/<int:poekebank_id>/poekemon/JSON')
@@ -112,4 +119,4 @@ def poekemonJSON(poekebank_id, poekemon_id):
 
 if __name__ == '__main__':
 	app.debug = True
-	app.run(host='0.0.0.0', port=5000)
+	app.run(host='localhost', port=5000)
